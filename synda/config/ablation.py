@@ -25,9 +25,4 @@ class Ablation(Step):
     def get_executor(self, session: Session, run: Run, step_model: StepModel):
         if self.method == "llm-judge-binary":
             from synda.pipeline.ablation import LLMJudgeBinary
-
             return LLMJudgeBinary(session, run, step_model)
-        elif self.method == "async-llm-judge-binary":
-            from synda.pipeline.ablation import AsyncLLMJudgeBinary
-
-            return AsyncLLMJudgeBinary(session, run, step_model)
