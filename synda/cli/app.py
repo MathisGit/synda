@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from synda.database import init_db
 from synda.cli.provider import provider_command
 from synda.cli.generate import generate_command
+from synda.cli.api import api_command
 
 
 app = typer.Typer(
@@ -14,6 +15,7 @@ app = typer.Typer(
 
 app.command("provider")(provider_command)
 app.command("generate")(generate_command)
+app.command("api")(api_command)
 
 
 def main():

@@ -1,0 +1,5 @@
+content
+user_manual | For everything related to vehicle usage, configuration, or maintenance. Examples: oil change, WiFi setup, driver profile, infotainment system, dashboard warning lights. Do not use for topics like insurance, recalls, or model comparisons.
+vehicle_related | For broader or external vehicle topics. Examples: insurance, financing, regulations, resale, model choice. Do not use if the answer is in the user manual.
+navigation | For everything related to location, routes, or nearby places. Examples: finding a gas station, getting from A to B, travel time. Do not use for vehicle maintenance or configuration.
+other | For off-topic content (not related to vehicles, driving, or navigation). Examples: vague requests, general discussions, topics unrelated to automobiles. 

@@ -1,0 +1,66 @@
+input:
+  type: csv
+  properties:
+    path: queries/source/tools.csv
+    target_column: content
+    separator: "\t"
+
+pipeline:
+  - type: generation
+    method: async-llm
+    parameters:
+      provider: mistral
+      model: mistral-large-latest
+      temperature: 0.7
+      instruction_mode: "all_combinations"
+      batch_size: 40
+      instruction_sets:
+        length:
+          - "Generate a medium length query (5-10 words)"
+          - "Generate a detailed query (15+ words)"
+        language:
+          - "Write in English"        
+          - "Write in French"
+        style:
+          - "Write in a formal style"
+          - "Write in a casual style"
+        type:
+          - "Ask a closed question"
+          - "Ask an open question"
+        tool:
+          - "The query is about the following subject: {source}"
+        
+      template: |
+        You are generating natural language queries for a vehicle assistant. 
+        Each query should be natural and conversational, as if a real person was asking
+        
+        Answer directly the question, do not add any other text or annotations
+                
+        {instructions}
+
+
+
+  - type: clean
+    method: deduplicate-tf-idf
+    parameters:
+      strategy: fuzzy
+      similarity_threshold: 0.7
+      keep: first
+
+  - type: ablation
+    method: async-llm-judge-binary
+    parameters:
+      provider: mistral
+      model: mistral-large-latest
+      consensus: all
+      batch_size: 40
+      criteria:
+        - "Is the query relevant to the tool category {source}?"
+        - "Is the query written in proper English?"
+
+output:
+  type: csv
+  properties:
+    path: queries/output/generated_queries.csv
+    separator: ","
+    columns: ["value", "metadata"]  # metadata contiendra les instructions utilisées

@@ -1,7 +1,7 @@
 input:
   type: csv
   properties:
-    path: tests/stubs/csv_rag/source.csv
+    path: tests/stubs/csv_rag/base_radio_manual.csv
     target_column: content
     separator: "\t"
 
@@ -10,50 +10,42 @@ pipeline:
     method: chunk
     name: chunk_faq
     parameters:
-      size: 1500
+      size: 9999
 
-  - type: split
-    method: separator
-    name: sentence_chunk_faq
-    parameters:
-      separator: .
-      keep_separator: true
+  # - type: split
+  #   method: separator
+  #   name: sentence_chunk_faq
+  #   parameters:
+  #     separator: .
+  #     keep_separator: true
 
   - type: generation
-    method: llm
+    method: async-llm
     parameters:
-      provider: openai
-      model: gpt-4o-mini
+      provider: mistral
+      model: mistral-large-latest
+      batch_size: 40
       template: |
-        Ask a question regarding the sentence about the content.
+        You are a human in a car looking for information about the vehicle.
+        The question must be natural, like a question a human would ask in a typical request to a incar assistant.
+        Ask a question about the content.
         content: {chunk_faq}
-        sentence: {sentence_chunk_faq}
 
         Instructions :
         1. Use english only
         2. Keep it short
 
-        question:
+        Answer directly the question, do not add any other text.
 
   - type: clean
-    method: deduplicate-tf-idf
+    method: deduplicate-embed
     parameters:
-      strategy: fuzzy
-      similarity_threshold: 0.9
-      keep: first
-
-  - type: ablation
-    method: llm-judge-binary
-    parameters:
-      provider: openai
-      model: gpt-4o-mini
-      consensus: all
-      criteria:
-        - Is the question written in english?
-        - Is the question consistent?
+      provider: mistral
+      model: mistral-embed
+      similarity_threshold: 0.7
 
 output:
   type: csv
   properties:
-    path: tests/stubs/csv_rag/output.csv
+    path: tests/stubs/csv_rag/output_radio_manual_embed.csv
     separator: "\t"
